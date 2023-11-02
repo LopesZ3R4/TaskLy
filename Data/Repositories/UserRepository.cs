@@ -1,8 +1,5 @@
 // .\Data\Repositories\UserRepository.cs
 
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-
 namespace Data
 {
     public class UserRepository

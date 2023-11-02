@@ -14,13 +14,17 @@ public class AuthController : ControllerBase
 {
     private readonly AuthenticationService _authService;
     private readonly UserRepository _userRepository;
+    private readonly TaskRepository _taskRepository;
     private readonly IConfiguration _configuration;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public AuthController(AuthenticationService authService, UserRepository userRepository, IConfiguration configuration)
+    public AuthController(AuthenticationService authService, UserRepository userRepository, IConfiguration configuration, TaskRepository taskRepository, IServiceScopeFactory serviceScopeFactory)
     {
         _authService = authService;
         _userRepository = userRepository;
         _configuration = configuration;
+        _taskRepository = taskRepository;
+        _serviceScopeFactory = serviceScopeFactory;
     }
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
@@ -54,6 +58,22 @@ public class AuthController : ControllerBase
         user.Token = tokenString;
         _userRepository.Update(user);
 
+        _ = Task.Run(async () =>
+        {
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var taskRepository = scope.ServiceProvider.GetRequiredService<TaskRepository>();
+                try
+                {
+                    List<Tasks>? pendingTasks = await taskRepository.GetUserPendingTasks(request.Username);
+                    taskRepository.FinnishTasks(pendingTasks);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                }
+            }
+        });
         return Ok(new { Token = tokenString });
     }
 
