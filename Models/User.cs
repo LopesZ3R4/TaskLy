@@ -1,5 +1,4 @@
 //File Path: /Models/User.cs
-
 public class User
 {
     public int Id { get; set; }
