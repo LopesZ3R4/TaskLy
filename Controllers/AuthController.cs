@@ -14,16 +14,14 @@ public class AuthController : ControllerBase
 {
     private readonly AuthenticationService _authService;
     private readonly UserRepository _userRepository;
-    private readonly TaskRepository _taskRepository;
     private readonly IConfiguration _configuration;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public AuthController(AuthenticationService authService, UserRepository userRepository, IConfiguration configuration, TaskRepository taskRepository, IServiceScopeFactory serviceScopeFactory)
+    public AuthController(AuthenticationService authService, UserRepository userRepository, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
     {
         _authService = authService;
         _userRepository = userRepository;
         _configuration = configuration;
-        _taskRepository = taskRepository;
         _serviceScopeFactory = serviceScopeFactory;
     }
     [HttpPost("login")]
