@@ -14,9 +14,13 @@ namespace Data
             _context = context;
         }
 
-        public Tasks? GetTaskbyID(BigInteger Id)
+        public async Task<Tasks?> GetTaskbyID(long Id)
         {
-            return _context.Tasks.FirstOrDefault(t => t.Id == Id);
+            return await _context.Tasks.FirstOrDefaultAsync(t => t.Id == Id);
+        }
+        public bool Exists(long Id)
+        {
+            return _context.Tasks.Any(t => t.Id == Id);
         }
         public async Task<List<Tasks>?> GetAllUserTasksAsync(string Username)
         {
@@ -33,10 +37,10 @@ namespace Data
             query = query.Where(t => t.Owner == Username && t.AutoFinish == true && t.Finished == false && t.FinishDate <= now);
             return await query.ToListAsync();
         }
-        public void Add(Tasks Task)
+        public async Task Add(Tasks Task)
         {
             _context.Tasks.Add(Task);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public void Update(Tasks Task)
@@ -46,7 +50,6 @@ namespace Data
         }
         public void FinnishTasks(List<Tasks>? Tasks)
         {
-            var now = DateTime.Now;
             if(Tasks != null){
                 foreach (Tasks task in Tasks)
                 {
@@ -55,6 +58,11 @@ namespace Data
                     _context.SaveChanges();
                 }
             }
+        }
+        public async Task Delete(Tasks task)
+        {
+            _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 public class Tasks
 {
-    public int Id { get; set; }
+    public int? Id { get; set; }
     #pragma warning disable CS8618
     public string Title { get; set; }
     public string? Description { get; set; }
