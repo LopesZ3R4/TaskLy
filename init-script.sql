@@ -165,4 +165,64 @@ VALUES
 ('BR-SE', 'Sergipe'),
 ('BR-TO', 'Tocantins');
 
+CREATE TABLE Tags
+(
+    Id INT NOT NULL,
+    Name NVARCHAR(50) NOT NULL,
+    Color NVARCHAR(7) NOT NULL,
+    Username NVARCHAR(50) NOT NULL,
+    FOREIGN KEY (Username) REFERENCES Users (Username),
+    PRIMARY KEY (Id, Username)
+);
+
+CREATE TABLE TaskTags
+(
+    TaskId INT NOT NULL,
+    TagId INT NOT NULL,
+    Username NVARCHAR(50) NOT NULL,
+    PRIMARY KEY (TaskId, TagId, Username),
+    FOREIGN KEY (TaskId) REFERENCES Tasks (Id),
+    FOREIGN KEY (TagId, Username) REFERENCES Tags (Id, Username)
+);
+
+CREATE INDEX idx_tags_username ON Tags (Username,Id);
+
+CREATE INDEX idx_tasktags_taskid ON TaskTags (TaskId);
+CREATE INDEX idx_tasktags_tagid_username ON TaskTags (TagId, Username);
+
+INSERT INTO Tags (Id, Name, Color, Username)
+VALUES 
+(1,'Tag1', '#FF0000', 'Admin'), -- Red
+(2,'Tag2', '#00FF00', 'Admin'), -- Green
+(3,'Tag3', '#0000FF', 'Admin'), -- Blue
+(4,'Tag4', '#FFFF00', 'Admin'), -- Yellow
+(5,'Tag5', '#FF00FF', 'Admin'); -- Magenta
+
+DECLARE @TagId INT;
+SELECT @TagId = Id FROM Tags WHERE Name = 'Tag1' AND Username = 'Admin';
+
+-- Associate the first tag with task 1
+INSERT INTO TaskTags (TaskId, TagId, Username)
+VALUES (1, @TagId, 'Admin');
+go
+
+CREATE TRIGGER trg_InsertTagsForNewUser
+ON Users
+AFTER INSERT
+AS
+BEGIN
+    -- Insert tags for the new user
+    INSERT INTO Tags (Id, Name, Color, Username)
+    SELECT 1, 'Tag1', '#FF0000', i.Username FROM inserted i
+    UNION ALL
+    SELECT 2, 'Tag2', '#00FF00', i.Username FROM inserted i
+    UNION ALL
+    SELECT 3, 'Tag3', '#0000FF', i.Username FROM inserted i
+    UNION ALL
+    SELECT 4, 'Tag4', '#FFFF00', i.Username FROM inserted i
+    UNION ALL
+    SELECT 5, 'Tag5', '#FF00FF', i.Username FROM inserted i;
+END;
+GO
+
 PRINT 'Initialization script completed successfully.'
