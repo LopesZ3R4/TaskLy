@@ -65,8 +65,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
     
 builder.Services.AddScoped<AuthenticationService>();
+builder.Services.AddScoped<HolidayService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<TaskRepository>();
+builder.Services.AddScoped<HolidayRepository>();
 
 var app = builder.Build();
 

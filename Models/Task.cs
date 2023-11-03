@@ -1,9 +1,11 @@
 //File Path: /Models/Task.cs
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 public class Tasks
 {
-    public int? Id { get; set; }
+    [Key]
+    public int Id { get; set; }
     #pragma warning disable CS8618
     public string Title { get; set; }
     public string? Description { get; set; }
