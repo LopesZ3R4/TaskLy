@@ -14,9 +14,16 @@ namespace Data
             _context = context;
         }
 
-        public async Task<Tasks?> GetTaskbyID(long Id)
+        public async Task<Tasks?> GetTaskbyID(int Id)
         {
             return await _context.Tasks.FirstOrDefaultAsync(t => t.Id == Id);
+        }
+        public async Task<string?> GetTaskOwnerByID(int Id)
+        {
+            return await _context.Tasks
+                .Where(t => t.Id == Id)
+                .Select(t => t.Owner)
+                .FirstOrDefaultAsync();
         }
         public bool Exists(long Id)
         {
@@ -43,10 +50,10 @@ namespace Data
             await _context.SaveChangesAsync();
         }
 
-        public void Update(Tasks Task)
+        public async Task Update(Tasks Task)
         {
             _context.Tasks.Update(Task);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
         public void FinnishTasks(List<Tasks>? Tasks)
         {
