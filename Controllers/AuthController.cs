@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Swashbuckle.AspNetCore.Annotations;
 
 [ApiController]
 [Route("[controller]")]
@@ -78,6 +79,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [SwaggerResponse(StatusCodes.Status200OK, "User registered successfully")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid email format or the provided county does not exist", typeof(string))]
+    [SwaggerResponse(StatusCodes.Status409Conflict, "A user with the same username or email already exists", typeof(string))]
     public IActionResult Register([FromBody] User newUser)
     {
         if (!EmailValidator.IsValidEmail(newUser.Email))
