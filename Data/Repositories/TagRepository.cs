@@ -12,15 +12,21 @@ namespace Data
         {
             _context = context;
         }
-        public async Task<int> GetNextId(string username)
+        public async Task<int> GetNextId(string owner)
         {
             var maxId = await _context.Tags
-                .Where(t => t.Username == username)
+                .Where(t => t.Owner == owner)
                 .MaxAsync(t => (int?)t.Id);
 
             return (maxId ?? 0) + 1;
         }
-
+        public List<dynamic> GetTagsList(string owner)
+        {
+            var tags = _context.Tags.Where(t => t.Owner == owner)
+                .Select(t => new { t.Id, t.Name, t.Color } as dynamic)
+                .ToList();
+            return tags;
+        }
         public async Task CreateTag(Tags tag)
         {
             _context.Tags.Add(tag);

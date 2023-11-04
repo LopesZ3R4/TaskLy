@@ -13,10 +13,10 @@ public class ApplicationDbContext : DbContext
             .HasKey(ht => new { ht.HolidayId, ht.TypeId });
 
         modelBuilder.Entity<Tags>()
-            .HasKey(t => new { t.Id, t.Username });
+            .HasKey(t => new { t.Id, t.Owner });
 
         modelBuilder.Entity<TaskTags>()
-            .HasKey(tt => new { tt.TaskId, tt.TagId, tt.Username });
+            .HasKey(tt => new { tt.TaskId, tt.TagId, tt.Owner });
     }
     public DbSet<User> Users { get; set; }
     public DbSet<Tasks> Tasks { get; set; }
@@ -25,4 +25,5 @@ public class ApplicationDbContext : DbContext
     public DbSet<Type> Types { get; set; }
     public DbSet<Tags> Tags { get; set; }
     public DbSet<TaskTags> TaskTags { get; set; }
+    public DbSet<County> County { get; set; }
 }

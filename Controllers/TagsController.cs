@@ -22,6 +22,15 @@ public class TagsController : ControllerBase
         _context = context;
         _tagsRepository = tagsRepository;
     }
+    [HttpGet]
+    public ActionResult<IEnumerable<County>> GetCounties()
+    {
+        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        var username = _authService.GetUsernameFromToken(token);
+
+        var counties = _tagsRepository.GetTagsList(username);
+        return Ok(counties);
+    }
 
     [HttpPost("new")]
     public async Task<ActionResult<Tags>> PostTag(Tags tag)
@@ -30,7 +39,7 @@ public class TagsController : ControllerBase
         var username = _authService.GetUsernameFromToken(token);
         var id = await _tagsRepository.GetNextId(username);
         tag.Id = id;
-        tag.Username = username;
+        tag.Owner = username;
 
         await _tagsRepository.CreateTag(tag);
         return Ok();
@@ -42,7 +51,7 @@ public class TagsController : ControllerBase
         var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var username = _authService.GetUsernameFromToken(token);
 
-        if (id != tag.Id || username != tag.Username)
+        if (id != tag.Id || username != tag.Owner)
         {
             return BadRequest();
         }

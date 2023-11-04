@@ -16,5 +16,5 @@ public class Tasks
     public bool AutoFinish { get; set; }
     public bool Finished { get; set; }
     public string? Owner { get; set; }
-    public List<TaskTags> TaskTags { get; set; }
+    public List<TaskTags>? TaskTags { get; set; }
 }

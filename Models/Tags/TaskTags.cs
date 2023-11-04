@@ -5,5 +5,5 @@ public class TaskTags
 
     public int TagId { get; set; }
     public Tags Tag { get; set; }
-    public string Username { get; set; }
+    public string Owner { get; set; }
 }
