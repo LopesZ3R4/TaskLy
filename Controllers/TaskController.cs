@@ -21,6 +21,15 @@ public class TaskController : ControllerBase
         _taskRepository = taskRepository;
         _configuration = configuration;
     }
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Tasks>?>> GetTasks()
+    {
+        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        var username = _authService.GetUsernameFromToken(token);
+        
+        var tasks = _taskRepository.GetAllUserTasksAsync(username);
+        return await tasks;
+    }
     [HttpPost("new")]
     public async Task<IActionResult> Post([FromBody] Tasks Task)
     {
@@ -72,7 +81,7 @@ public class TaskController : ControllerBase
         task.StartDate = updatedTask.StartDate;
         task.Duration = updatedTask.Duration;
         task.AutoFinish = updatedTask.AutoFinish;
-        task.Finished = updatedTask.Finished;
+        task.Status = updatedTask.Status;
 
         await _taskRepository.Update(task);
         return NoContent();
