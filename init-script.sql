@@ -200,12 +200,12 @@ VALUES
 (4,'Tag4', '#FFFF00', 'Admin'), -- Yellow
 (5,'Tag5', '#FF00FF', 'Admin'); -- Magenta
 
-DECLARE @TagId INT;
-SELECT @TagId = Id FROM Tags WHERE Name = 'Tag1' AND Owner = 'Admin';
-
 -- Associate the first tag with task 1
 INSERT INTO TaskTags (TaskId, TagId, Owner)
-VALUES (1, @TagId, 'Admin');
+VALUES 
+(1, 1, 'Admin'),
+(1, 3, 'Admin')
+;
 go
 
 CREATE TRIGGER trg_InsertTagsForNewUser
