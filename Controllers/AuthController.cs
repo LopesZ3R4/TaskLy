@@ -14,13 +14,15 @@ public class AuthController : ControllerBase
 {
     private readonly AuthenticationService _authService;
     private readonly UserRepository _userRepository;
+    private readonly CountyRepository _countyRepository;
     private readonly IConfiguration _configuration;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public AuthController(AuthenticationService authService, UserRepository userRepository, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+    public AuthController(AuthenticationService authService, UserRepository userRepository, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CountyRepository countyRepository)
     {
         _authService = authService;
         _userRepository = userRepository;
+        _countyRepository = countyRepository;
         _configuration = configuration;
         _serviceScopeFactory = serviceScopeFactory;
     }
@@ -87,6 +89,12 @@ public class AuthController : ControllerBase
         if (existingUser)
         {
             return Conflict("A user with the same username or email already exists");
+        }
+        var existingCounty = _countyRepository.Exists(newUser.CountyCode);
+
+        if(!existingCounty)
+        {
+            return BadRequest("The provided county does not exist");
         }
 
         newUser.Password = _authService.HashPassword(newUser.Password);

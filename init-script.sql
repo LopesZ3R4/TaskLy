@@ -32,6 +32,43 @@ PRINT 'Granting sysadmin role to admin user...'
 ALTER SERVER ROLE sysadmin ADD MEMBER adm;
 GO
 
+PRINT 'Creating County table...'
+CREATE TABLE County
+(
+    CountyCode NVARCHAR(5) PRIMARY KEY,
+    Name NVARCHAR(50) NOT NULL
+);
+CREATE INDEX idx_County_countycode ON County (CountyCode);
+INSERT INTO County (CountyCode, Name)
+VALUES
+('BR-AC', 'Acre'),
+('BR-AL', 'Alagoas'),
+('BR-AP', 'Amapá'),
+('BR-AM', 'Amazonas'),
+('BR-BA', 'Bahia'),
+('BR-CE', 'Ceará'),
+('BR-DF', 'Distrito Federal'),
+('BR-ES', 'Espírito Santo'),
+('BR-GO', 'Goiás'),
+('BR-MA', 'Maranhão'),
+('BR-MT', 'Mato Grosso'),
+('BR-MS', 'Mato Grosso do Sul'),
+('BR-MG', 'Minas Gerais'),
+('BR-PA', 'Pará'),
+('BR-PB', 'Paraíba'),
+('BR-PR', 'Paraná'),
+('BR-PE', 'Pernambuco'),
+('BR-PI', 'Piauí'),
+('BR-RJ', 'Rio de Janeiro'),
+('BR-RN', 'Rio Grande do Norte'),
+('BR-RS', 'Rio Grande do Sul'),
+('BR-RO', 'Rondônia'),
+('BR-RR', 'Roraima'),
+('BR-SC', 'Santa Catarina'),
+('BR-SP', 'São Paulo'),
+('BR-SE', 'Sergipe'),
+('BR-TO', 'Tocantins');
+
 PRINT 'Creating Users table...'
 
 CREATE TABLE Users
@@ -41,13 +78,15 @@ CREATE TABLE Users
     Password NVARCHAR(128) NOT NULL,
     UserType NVARCHAR(50) NOT NULL,
     Email NVARCHAR(255) NOT NULL UNIQUE,
-    Token NVARCHAR(255)
+    Token NVARCHAR(255),
+    CountyCode NVARCHAR(5) NOT NULL,
+    FOREIGN KEY (CountyCode) REFERENCES County (CountyCode)
 );
 CREATE INDEX idx_username ON Users (Username);
 CREATE INDEX idx_email ON Users (Email);
 
-INSERT INTO Users (Username,Password,UserType,Email) values ('admin','34b9b7e38c513dd5b4001aa7b2f05f15444c7c520d5b851b28ef22e462811cc9','Admin','admin@sou.br');
-INSERT INTO Users (Username,Password,UserType,Email) values ('joao.moreno','34b9b7e38c513dd5b4001aa7b2f05f15444c7c520d5b851b28ef22e462811cc9','Admin','joao@sou.br');
+INSERT INTO Users (Username,Password,UserType,Email,CountyCode) values ('admin','34b9b7e38c513dd5b4001aa7b2f05f15444c7c520d5b851b28ef22e462811cc9','Admin','admin@sou.br','BR-MT');
+INSERT INTO Users (Username,Password,UserType,Email,CountyCode) values ('joao.moreno','34b9b7e38c513dd5b4001aa7b2f05f15444c7c520d5b851b28ef22e462811cc9','Admin','joao@sou.br','BR-SP');
 
 CREATE TABLE Tasks
 (
@@ -76,13 +115,6 @@ VALUES ('Entrega do Projeto', 'Projeto de Aplicação fullstack sobre Tasks', '2
 
 INSERT INTO Tasks (Title, Description, StartDate, Duration, AutoFinish, Finished, Owner)
 VALUES ('Protótipo 1', 'Entrega do Primeiro Prototipo', '2023-11-02T10:30:00', 120, 1, 0, 'joao.moreno');
-
-CREATE TABLE County
-(
-    CountyCode NVARCHAR(5) PRIMARY KEY,
-    Name NVARCHAR(50) NOT NULL
-);
-CREATE INDEX idx_County_countycode ON County (CountyCode);
 
 CREATE TABLE Holidays
 (
@@ -135,62 +167,32 @@ VALUES
 ('Optional'),
 ('Observance');
 
-INSERT INTO County (CountyCode, Name)
-VALUES
-('BR-AC', 'Acre'),
-('BR-AL', 'Alagoas'),
-('BR-AP', 'Amapá'),
-('BR-AM', 'Amazonas'),
-('BR-BA', 'Bahia'),
-('BR-CE', 'Ceará'),
-('BR-DF', 'Distrito Federal'),
-('BR-ES', 'Espírito Santo'),
-('BR-GO', 'Goiás'),
-('BR-MA', 'Maranhão'),
-('BR-MT', 'Mato Grosso'),
-('BR-MS', 'Mato Grosso do Sul'),
-('BR-MG', 'Minas Gerais'),
-('BR-PA', 'Pará'),
-('BR-PB', 'Paraíba'),
-('BR-PR', 'Paraná'),
-('BR-PE', 'Pernambuco'),
-('BR-PI', 'Piauí'),
-('BR-RJ', 'Rio de Janeiro'),
-('BR-RN', 'Rio Grande do Norte'),
-('BR-RS', 'Rio Grande do Sul'),
-('BR-RO', 'Rondônia'),
-('BR-RR', 'Roraima'),
-('BR-SC', 'Santa Catarina'),
-('BR-SP', 'São Paulo'),
-('BR-SE', 'Sergipe'),
-('BR-TO', 'Tocantins');
-
 CREATE TABLE Tags
 (
     Id INT NOT NULL,
     Name NVARCHAR(50) NOT NULL,
     Color NVARCHAR(7) NOT NULL,
-    Username NVARCHAR(50) NOT NULL,
-    FOREIGN KEY (Username) REFERENCES Users (Username),
-    PRIMARY KEY (Id, Username)
+    Owner NVARCHAR(50) NOT NULL,
+    FOREIGN KEY (Owner) REFERENCES Users (Username),
+    PRIMARY KEY (Id, Owner)
 );
 
 CREATE TABLE TaskTags
 (
     TaskId INT NOT NULL,
     TagId INT NOT NULL,
-    Username NVARCHAR(50) NOT NULL,
-    PRIMARY KEY (TaskId, TagId, Username),
+    Owner NVARCHAR(50) NOT NULL,
+    PRIMARY KEY (TaskId, TagId, Owner),
     FOREIGN KEY (TaskId) REFERENCES Tasks (Id),
-    FOREIGN KEY (TagId, Username) REFERENCES Tags (Id, Username)
+    FOREIGN KEY (TagId, Owner) REFERENCES Tags (Id, Owner)
 );
 
-CREATE INDEX idx_tags_username ON Tags (Username,Id);
+CREATE INDEX idx_tags_Owner ON Tags (Owner);
 
 CREATE INDEX idx_tasktags_taskid ON TaskTags (TaskId);
-CREATE INDEX idx_tasktags_tagid_username ON TaskTags (TagId, Username);
+CREATE INDEX idx_tasktags_tagid ON TaskTags (TagId, Owner);
 
-INSERT INTO Tags (Id, Name, Color, Username)
+INSERT INTO Tags (Id, Name, Color, Owner)
 VALUES 
 (1,'Tag1', '#FF0000', 'Admin'), -- Red
 (2,'Tag2', '#00FF00', 'Admin'), -- Green
@@ -199,10 +201,10 @@ VALUES
 (5,'Tag5', '#FF00FF', 'Admin'); -- Magenta
 
 DECLARE @TagId INT;
-SELECT @TagId = Id FROM Tags WHERE Name = 'Tag1' AND Username = 'Admin';
+SELECT @TagId = Id FROM Tags WHERE Name = 'Tag1' AND Owner = 'Admin';
 
 -- Associate the first tag with task 1
-INSERT INTO TaskTags (TaskId, TagId, Username)
+INSERT INTO TaskTags (TaskId, TagId, Owner)
 VALUES (1, @TagId, 'Admin');
 go
 
@@ -212,7 +214,7 @@ AFTER INSERT
 AS
 BEGIN
     -- Insert tags for the new user
-    INSERT INTO Tags (Id, Name, Color, Username)
+    INSERT INTO Tags (Id, Name, Color, Owner)
     SELECT 1, 'Tag1', '#FF0000', i.Username FROM inserted i
     UNION ALL
     SELECT 2, 'Tag2', '#00FF00', i.Username FROM inserted i
