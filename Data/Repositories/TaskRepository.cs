@@ -1,6 +1,4 @@
 // .\Data\Repositories\TaskRepository.cs
-using System.Numerics;
-using System.Runtime.InteropServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data
@@ -29,12 +27,33 @@ namespace Data
         {
             return _context.Tasks.Any(t => t.Id == Id);
         }
-        public async Task<List<Tasks>?> GetAllUserTasksAsync(string Username)
+        public async Task<List<TaskDto>?> GetAllUserTasksAsync(string Username)
         {
-            var query = _context.Tasks
-                        .AsNoTracking();
-            query = query.Where(t => t.Owner == Username);
-            return await query.ToListAsync();
+            var tasks = await _context.Tasks
+                            .Where(t => t.Owner == Username)
+                            .Include(t => t.TaskTags!)
+                                .ThenInclude(tt => tt.Tags)
+                            .Select(t => new TaskDto
+                            {
+                                Id = t.Id,
+                                Title = t.Title,
+                                Description = t.Description,
+                                StartDate = t.StartDate,
+                                FinishDate = t.FinishDate,
+                                Duration = t.Duration,
+                                AutoFinish = t.AutoFinish,
+                                Status = t.Status,
+                                Owner = t.Owner,
+                                Tag = t.TaskTags!.Select(tt => new TagDto
+                                {
+                                    Id = tt.TagId,
+                                    Name = tt.Tags.Name,
+                                    Color = tt.Tags.Color
+                                }).ToList()
+                            })
+                            .ToListAsync();
+
+            return tasks;
         }
         public async Task<List<Tasks>?> GetUserPendingTasks(string Username)
         {
@@ -56,7 +75,8 @@ namespace Data
         }
         public void FinnishTasks(List<Tasks>? Tasks)
         {
-            if(Tasks != null){
+            if (Tasks != null)
+            {
                 foreach (Tasks task in Tasks)
                 {
                     task.Status = TaskStatus.Finished;

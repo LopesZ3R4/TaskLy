@@ -1,6 +1,5 @@
 // Path: Models/Tags.cs
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 public class Tags
 {
@@ -9,5 +8,5 @@ public class Tags
     public string Name { get; set; }
     public string Color { get; set; }
     public string? Owner { get; set; }
-    
+    public List<TaskTags>? TaskTags { get; set; }
 }

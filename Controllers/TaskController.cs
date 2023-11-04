@@ -22,7 +22,7 @@ public class TaskController : ControllerBase
         _configuration = configuration;
     }
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Tasks>?>> GetTasks()
+    public async Task<ActionResult<IEnumerable<TaskDto>?>> GetTasks()
     {
         var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var username = _authService.GetUsernameFromToken(token);

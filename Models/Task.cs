@@ -22,5 +22,5 @@ public class Tasks
     public bool AutoFinish { get; set; }
     public TaskStatus Status { get; set; }
     public string? Owner { get; set; }
-    public List<TaskTags>? TaskTags { get; set; }
+    public ICollection<TaskTags>? TaskTags { get; set; }
 }

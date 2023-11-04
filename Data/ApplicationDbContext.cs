@@ -16,7 +16,17 @@ public class ApplicationDbContext : DbContext
             .HasKey(t => new { t.Id, t.Owner });
 
         modelBuilder.Entity<TaskTags>()
-            .HasKey(tt => new { tt.TaskId, tt.TagId, tt.Owner });
+        .HasKey(tt => new { tt.TaskId, tt.TagId, tt.Owner });
+
+        modelBuilder.Entity<TaskTags>()
+            .HasOne(tt => tt.Tasks)
+            .WithMany(t=> t.TaskTags)
+            .HasForeignKey(tt => tt.TaskId);
+
+        modelBuilder.Entity<TaskTags>()
+            .HasOne(tt => tt.Tags)
+            .WithMany(t=> t.TaskTags)
+            .HasForeignKey(tt => new { tt.TagId, tt.Owner });
     }
     public DbSet<User> Users { get; set; }
     public DbSet<Tasks> Tasks { get; set; }
