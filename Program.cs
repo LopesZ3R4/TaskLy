@@ -70,6 +70,7 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<TaskRepository>();
 builder.Services.AddScoped<HolidayRepository>();
 builder.Services.AddScoped<TagsRepository>();
+builder.Services.AddScoped<CountyRepository>();
 
 var app = builder.Build();
 
