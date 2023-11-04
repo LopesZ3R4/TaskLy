@@ -38,10 +38,9 @@ namespace Data
         }
         public async Task<List<Tasks>?> GetUserPendingTasks(string Username)
         {
-            var query = _context.Tasks
-                        .AsNoTracking();
+            var query = _context.Tasks.AsQueryable();
             DateTime now = DateTime.Now;
-            query = query.Where(t => t.Owner == Username && t.AutoFinish == true && t.Finished == false && t.FinishDate <= now);
+            query = query.Where(t => t.Owner == Username && t.AutoFinish == true && t.Status != TaskStatus.Finished && t.FinishDate <= now);
             return await query.ToListAsync();
         }
         public async Task Add(Tasks Task)
@@ -60,7 +59,7 @@ namespace Data
             if(Tasks != null){
                 foreach (Tasks task in Tasks)
                 {
-                    task.Finished = true;
+                    task.Status = TaskStatus.Finished;
                     _context.Tasks.Update(task);
                     _context.SaveChanges();
                 }

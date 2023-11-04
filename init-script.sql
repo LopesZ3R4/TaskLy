@@ -96,7 +96,7 @@ CREATE TABLE Tasks
     StartDate DATETIME NOT NULL,
     Duration BigInt NOT NULL,
     AutoFinish bit NOT NULL,
-    Finished bit NOT NULL,
+    Status INT NOT NULL,
     Owner NVARCHAR(50) not null,
     FinishDate AS DATEADD(minute, Duration, StartDate),
     FOREIGN KEY (Owner) REFERENCES Users (Username)
@@ -110,11 +110,11 @@ GO
 CREATE INDEX Idx_FinishedDate ON Tasks (FinishDate);
 GO
 
-INSERT INTO Tasks (Title, Description, StartDate, Duration, AutoFinish, Finished, Owner)
-VALUES ('Entrega do Projeto', 'Projeto de Aplicação fullstack sobre Tasks', '2023-11-07T07:30:00', 120, 1, 0, 'admin');
+INSERT INTO Tasks (Title, Description, StartDate, Duration, AutoFinish, Status, Owner)
+VALUES ('Entrega do Projeto', 'Projeto de Aplicação fullstack sobre Tasks', '2023-11-07T07:30:00', 120, 1, 1, 'admin');
 
-INSERT INTO Tasks (Title, Description, StartDate, Duration, AutoFinish, Finished, Owner)
-VALUES ('Protótipo 1', 'Entrega do Primeiro Prototipo', '2023-11-02T10:30:00', 120, 1, 0, 'joao.moreno');
+INSERT INTO Tasks (Title, Description, StartDate, Duration, AutoFinish, Status, Owner)
+VALUES ('Protótipo 1', 'Entrega do Primeiro Prototipo', '2023-11-02T10:30:00', 120, 1, 2, 'joao.moreno');
 
 CREATE TABLE Holidays
 (

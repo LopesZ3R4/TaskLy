@@ -2,6 +2,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+public enum TaskStatus
+{
+    Pending = 1,
+    InProgress = 2,
+    Finished = 3
+}
 public class Tasks
 {
     [Key]
@@ -14,7 +20,7 @@ public class Tasks
     public DateTime FinishDate { get; set; }
     public long Duration { get; set; }
     public bool AutoFinish { get; set; }
-    public bool Finished { get; set; }
+    public TaskStatus Status { get; set; }
     public string? Owner { get; set; }
     public List<TaskTags>? TaskTags { get; set; }
 }
