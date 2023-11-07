@@ -8,8 +8,8 @@ public class NewTagDto
         return new Tags
         {
             Id = id,
-            Name = this.Name,
-            Color = this.Color,
+            Name = Name,
+            Color = Color,
             Owner = owner,
         };
     }
