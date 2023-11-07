@@ -20,12 +20,10 @@ namespace Services {
 
     public bool ValidateCredentials(string Username, string password)
     {
-        Console.WriteLine("Initializing Credentials Validation");
         var user = _userRepository.Get(Username);
 
         if (user == null)
         {   
-            Console.WriteLine($"No user found with user: {Username}");
             return false;
         }
 
