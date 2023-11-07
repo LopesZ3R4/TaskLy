@@ -12,13 +12,15 @@ public class TaskController : ControllerBase
     private readonly AuthenticationService _authService;
     private readonly UserRepository _userRepository;
     private readonly TaskRepository _taskRepository;
+    private readonly TagsRepository _tagsRepository;
     private readonly IConfiguration _configuration;
 
-    public TaskController(AuthenticationService authService, UserRepository userRepository, TaskRepository taskRepository, IConfiguration configuration)
+    public TaskController(AuthenticationService authService, UserRepository userRepository, TaskRepository taskRepository, IConfiguration configuration, TagsRepository tagsRepository)
     {
         _authService = authService;
         _userRepository = userRepository;
         _taskRepository = taskRepository;
+        _tagsRepository = tagsRepository;
         _configuration = configuration;
     }
     [HttpGet]
@@ -27,18 +29,25 @@ public class TaskController : ControllerBase
         var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var username = _authService.GetUsernameFromToken(token);
         
-        var tasks = _taskRepository.GetAllUserTasksAsync(username);
+        var tasks = _taskRepository.GetAllUserTasks(username);
         return await tasks;
     }
     [HttpPost("new")]
-    public async Task<IActionResult> Post([FromBody] Tasks Task)
+    public async Task<IActionResult> Post([FromBody] TaskDto taskDto)
     {
         var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var username = _authService.GetUsernameFromToken(token);
+        taskDto.Owner = username;
 
-        Task.Owner = username;
-
-        await _taskRepository.Add(Task);
+        foreach (var tag in taskDto.Tags)
+        {
+            var existingTag =_tagsRepository.Exists(tag.Id,username);
+            if (!existingTag)
+            {
+                return BadRequest($"Tag with id {tag.Id} does not exist.");
+            }
+        }
+        await _taskRepository.Add(taskDto);
 
         return Ok();
     }

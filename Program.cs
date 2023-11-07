@@ -76,8 +76,9 @@ builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<HolidayService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<TaskRepository>();
-builder.Services.AddScoped<HolidayRepository>();
 builder.Services.AddScoped<TagsRepository>();
+builder.Services.AddScoped<TaskTagsRepository>();
+builder.Services.AddScoped<HolidayRepository>();
 builder.Services.AddScoped<CountyRepository>();
 
 var app = builder.Build();

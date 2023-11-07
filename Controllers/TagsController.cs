@@ -33,20 +33,20 @@ public class TagsController : ControllerBase
     }
 
     [HttpPost("new")]
-    public async Task<ActionResult<Tags>> PostTag(Tags tag)
+    public async Task<ActionResult<Tags>> CreateTag(NewTagDto newTagDto)
     {
         var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var username = _authService.GetUsernameFromToken(token);
         var id = await _tagsRepository.GetNextId(username);
-        tag.Id = id;
-        tag.Owner = username;
+        
+        Tags Tag = newTagDto.ToModel(id,username);
 
-        await _tagsRepository.CreateTag(tag);
+        await _tagsRepository.CreateTag(Tag);
         return Ok();
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutTag(int id, Tags tag)
+    public async Task<IActionResult> UpdateTag(int id, Tags tag)
     {
         var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var username = _authService.GetUsernameFromToken(token);

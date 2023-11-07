@@ -1,10 +1,9 @@
 // Path: Repositories/TagRepository.cs
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data
 {
-    public class TagsRepository : ControllerBase
+    public class TagsRepository
     {
         private readonly ApplicationDbContext _context;
 
@@ -19,6 +18,11 @@ namespace Data
                 .MaxAsync(t => (int?)t.Id);
 
             return (maxId ?? 0) + 1;
+        }
+        public bool Exists(int id, string owner)
+        {
+            var exists = _context.Tags.Any(t => t.Id == id && t.Owner == owner);
+            return exists;
         }
         public List<dynamic> GetTagsList(string owner)
         {
