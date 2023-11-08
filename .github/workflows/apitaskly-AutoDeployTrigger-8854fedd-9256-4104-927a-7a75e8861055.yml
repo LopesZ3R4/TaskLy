@@ -46,8 +46,8 @@ jobs:
           COMPOSE_PROJECT_NAME: apitaskly
       - name: Update Azure Container Instance for web service
         run: |
-          az container create --resource-group apiTaskL_group --name apitaskly-web --image ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly-web:${{ github.sha }} --dns-name-label apitaskly-web --ports 80
-
+          az container create --resource-group apiTaskL_group --name apitaskly-web --image ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly-web:${{ github.sha }} --dns-name-label apitaskly-web --ports 80 --registry-login-server docker.io --registry-username ${{ secrets.APITASKLY_REGISTRY_USERNAME }} --registry-password ${{ secrets.APITASKLY_REGISTRY_PASSWORD }}
+      
       - name: Update Azure Container Instance for sql_server service
         run: |
-          az container create --resource-group apiTaskL_group --name apitaskly-sql_server --image ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly-sql_server:${{ github.sha }} --dns-name-label apitaskly-sql_server --ports 1433
+          az container create --resource-group apiTaskL_group --name apitaskly-sql_server --image ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly-sql_server:${{ github.sha }} --dns-name-label apitaskly-sql_server --ports 1433 --registry-login-server docker.io --registry-username ${{ secrets.APITASKLY_REGISTRY_USERNAME }} --registry-password ${{ secrets.APITASKLY_REGISTRY_PASSWORD }}
