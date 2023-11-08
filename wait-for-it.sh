@@ -10,7 +10,7 @@ cmd="$@"
 
 until nc -z $host $port; do
   >&2 echo "SQL Server is unavailable - sleeping"
-  sleep 1
+  sleep 30
 done
 
 >&2 echo "SQL Server is up - executing command"
