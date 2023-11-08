@@ -38,10 +38,10 @@ jobs:
         uses: actions/checkout@v2
       - name: Build and push Docker images
         run: |
-          docker-compose -f docker-compose.yaml build web
-          docker-compose -f docker-compose.yaml push web
-          docker-compose -f docker-compose.yaml build sql_server
-          docker-compose -f docker-compose.yaml push sql_server
+          docker-compose -f docker-compose.yml build web
+          docker-compose -f docker-compose.yml push web
+          docker-compose -f docker-compose.yml build sql_server
+          docker-compose -f docker-compose.yml push sql_server
         env:
           COMPOSE_PROJECT_NAME: apitaskly
       - name: Update Azure Container Instance
