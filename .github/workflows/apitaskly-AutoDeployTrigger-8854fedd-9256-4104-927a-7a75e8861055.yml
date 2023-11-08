@@ -38,7 +38,7 @@ jobs:
           registryPassword: ${{ secrets.APITASKLY_REGISTRY_PASSWORD }}
           containerAppName: apitaskly
           resourceGroup: apiTaskL_group
-          imageToBuild: index.docker.io/v1/apitaskly:${{ github.sha }}
+          imageToBuild: docker.io/${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly:${{ github.sha }}
           
 
      
