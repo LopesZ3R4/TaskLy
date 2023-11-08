@@ -34,13 +34,21 @@ jobs:
         with:
           username: ${{ secrets.APITASKLY_REGISTRY_USERNAME }}
           password: ${{ secrets.APITASKLY_REGISTRY_PASSWORD }}
-
       - name: Build and push Docker images
-        uses: docker/compose-push-action@v2
-        with:
-          services: 'web,sql_server'
-          push: true
-          tags: ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly-${{ github.event.repository.name }}-${{ github.sha }}
+        run: |
+          docker-compose -f docker-compose.yaml build web
+          docker-compose -f docker-compose.yaml push web
+          docker-compose -f docker-compose.yaml build sql_server
+          docker-compose -f docker-compose.yaml push sql_server
+        env:
+          COMPOSE_PROJECT_NAME: apitaskly
       - name: Update Azure Container Instance
         run: |
           az container create --resource-group apiTaskL_group --name apitaskly --image ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly:${{ github.sha }} --dns-name-label apitaskly --ports 80
+      - name: Update Azure Container Instance for web service
+        run: |
+          az container create --resource-group apiTaskL_group --name apitaskly-web --image ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly-web:${{ github.sha }} --dns-name-label apitaskly-web --ports 80
+
+      - name: Update Azure Container Instance for sql_server service
+        run: |
+          az container create --resource-group apiTaskL_group --name apitaskly-sql_server --image ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly-sql_server:${{ github.sha }} --dns-name-label apitaskly-sql_server --ports 1433
