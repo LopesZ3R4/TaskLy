@@ -44,9 +44,6 @@ jobs:
           docker-compose -f docker-compose.yml push sql_server
         env:
           COMPOSE_PROJECT_NAME: apitaskly
-      - name: Update Azure Container Instance
-        run: |
-          az container create --resource-group apiTaskL_group --name apitaskly --image ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly:${{ github.sha }} --dns-name-label apitaskly --ports 80
       - name: Update Azure Container Instance for web service
         run: |
           az container create --resource-group apiTaskL_group --name apitaskly-web --image ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly-web:${{ github.sha }} --dns-name-label apitaskly-web --ports 80
