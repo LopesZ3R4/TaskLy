@@ -40,7 +40,7 @@ jobs:
         with:
           services: 'web,sql_server'
           push: true
-          tags: ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly:${{ github.sha }}
+          tags: ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly-${{ github.event.repository.name }}-${{ github.sha }}
       - name: Update Azure Container Instance
         run: |
           az container create --resource-group apiTaskL_group --name apitaskly --image ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly:${{ github.sha }} --dns-name-label apitaskly --ports 80
