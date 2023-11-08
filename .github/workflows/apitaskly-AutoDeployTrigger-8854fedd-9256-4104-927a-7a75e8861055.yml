@@ -35,10 +35,10 @@ jobs:
           username: ${{ secrets.APITASKLY_REGISTRY_USERNAME }}
           password: ${{ secrets.APITASKLY_REGISTRY_PASSWORD }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+      - name: Build and push Docker images
+        uses: docker/compose-push-action@v2
         with:
-          context: .
+          services: 'web,sql_server'
           push: true
           tags: ${{ secrets.APITASKLY_REGISTRY_USERNAME }}/apitaskly:${{ github.sha }}
       - name: Update Azure Container Instance
