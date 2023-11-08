@@ -34,6 +34,8 @@ jobs:
         with:
           username: ${{ secrets.APITASKLY_REGISTRY_USERNAME }}
           password: ${{ secrets.APITASKLY_REGISTRY_PASSWORD }}
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
       - name: Build and push Docker images
         run: |
           docker-compose -f docker-compose.yaml build web
