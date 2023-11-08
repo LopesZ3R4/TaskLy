@@ -48,4 +48,4 @@ jobs:
         app-name: 'apiTaskLy'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile}}
-        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername }}/TaskLy:${{ github.sha }}'
+        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername }}/taskLy:${{ github.sha }}'
