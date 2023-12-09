@@ -37,14 +37,15 @@ public class TaskController : ControllerBase
     {
         var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var username = _authService.GetUsernameFromToken(token);
-        taskDto.Owner = username;
+        taskDto.SetOwner(username);
 
-        foreach (var tag in taskDto.Tags)
+        foreach (var tag in taskDto.GetTags())
         {
-            var existingTag =_tagsRepository.Exists(tag.Id,username);
+            var tagid = tag.GetId();
+            var existingTag =_tagsRepository.Exists(tagid,username!);
             if (!existingTag)
             {
-                return BadRequest($"Tag with id {tag.Id} does not exist.");
+                return BadRequest($"Tag with id {tagid} does not exist.");
             }
         }
         await _taskRepository.Add(taskDto);
@@ -62,7 +63,7 @@ public class TaskController : ControllerBase
         {
             return NotFound();
         }
-        if (task.Owner != username)
+        if (task.GetOwner() != username)
         {
             return Unauthorized();
         }
@@ -81,16 +82,16 @@ public class TaskController : ControllerBase
         {
             return NotFound();
         }
-        if (task.Owner != username)
+        if (task.GetOwner() != username)
         {
             return Unauthorized();
         }
-        task.Title = updatedTask.Title;
-        task.Description = updatedTask.Description;
-        task.StartDate = updatedTask.StartDate;
-        task.Duration = updatedTask.Duration;
-        task.AutoFinish = updatedTask.AutoFinish;
-        task.Status = updatedTask.Status;
+        task.SetTitle(updatedTask.GetTitle());
+        task.SetDescription(updatedTask.GetDescription());
+        task.SetStartDate(updatedTask.GetStartDate());
+        task.SetDuration(updatedTask.GetDuration());
+        task.SetAutoFinish(updatedTask.isAutoFinish());
+        task.SetStatus(updatedTask.GetStatus());
 
         await _taskRepository.Update(task);
         return NoContent();

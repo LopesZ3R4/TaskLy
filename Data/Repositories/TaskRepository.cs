@@ -33,34 +33,31 @@ namespace Data
         {
             var tasks = await _context.Tasks
                 .Where(t => t.Owner == Username)
-                .Select(t => new TaskDto
-                {
-                    Id = t.Id,
-                    Title = t.Title,
-                    Description = t.Description,
-                    StartDate = t.StartDate,
-                    FinishDate = t.FinishDate,
-                    Duration = t.Duration,
-                    AutoFinish = t.AutoFinish,
-                    Status = t.Status,
-                    Owner = t.Owner
-                }).ToListAsync();
+                .Select(t => new TaskDto(
+                    t.Id,
+                    t.Title,
+                    t.Description,
+                    t.StartDate,
+                    t.FinishDate,
+                    t.Duration,
+                    t.AutoFinish,
+                    t.Status,
+                    t.Owner
+                )).ToListAsync();
 
             foreach (var task in tasks)
             {
                 var tags = await (from tt in _context.TaskTags
-                            join tag in _context.Tags on tt.TagId equals tag.Id
-                            where tt.TaskId == task.Id
-                            select new TagDto
-                            {
-                                Id = (int)tag.Id!,
-                                Name = tag.Name,
-                                Color = tag.Color
-                            }).ToListAsync();
+                                  join tag in _context.Tags on tt.TagId equals tag.Id
+                                  where tt.TaskId == task.Id
+                                  select new TagDto(
+                                      (int)tag.GetId()!,
+                                      tag.GetName(),
+                                      tag.GetColor()
+                                  )).ToListAsync();
 
-                task.Tags = tags;
+                task.SetTags(tags);
             }
-
             return tasks;
         }
         public async Task<List<Tasks>?> GetUserPendingTasks(string Username)
@@ -77,14 +74,13 @@ namespace Data
 
             await _context.SaveChangesAsync();
 
-            foreach (var tagDto in taskDto.Tags)
+            foreach (var tagDto in taskDto.GetTags())
             {
-                var taskTag = new TaskTags
-                {
-                    TaskId = Task.Id,
-                    TagId = tagDto.Id,
-                    Owner = Task.Owner!
-                };
+                var taskTag = new TaskTags(
+                    Task.GetId(),
+                    tagDto.GetId(),
+                    Task.GetOwner()!
+                );
 
                 _context.TaskTags.Add(taskTag);
             }
@@ -102,7 +98,7 @@ namespace Data
             {
                 foreach (Tasks task in Tasks)
                 {
-                    task.Status = TaskStatus.Finished;
+                    task.SetStatus(TaskStatus.Finished);
                     _context.Tasks.Update(task);
                     _context.SaveChanges();
                 }
@@ -113,7 +109,7 @@ namespace Data
             List<TaskTags> taskTags = _taskTagsRepository.GetTaskTagsList(task);
             foreach (TaskTags taskTag in taskTags)
             {
-                taskTag.Owner = task.Owner!;
+                taskTag.SetOwner(task.GetOwner()!);
                 await _taskTagsRepository.DeleteTag(taskTag);
             }
             _context.Tasks.Remove(task);

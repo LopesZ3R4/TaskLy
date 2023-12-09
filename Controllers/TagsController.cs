@@ -51,7 +51,7 @@ public class TagsController : ControllerBase
         var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
         var username = _authService.GetUsernameFromToken(token);
 
-        if (id != tag.Id || username != tag.Owner)
+        if (id != tag.GetId() || username != tag.GetOwner())
         {
             return BadRequest();
         }
