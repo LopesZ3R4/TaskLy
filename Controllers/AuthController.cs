@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
     {
         var isValid = _authService.ValidateCredentials(request.Username, request.Password);
         if (!isValid)
-        {   
+        {
             Console.WriteLine("User does not have valid credentials");
             return Unauthorized();
         }
@@ -56,7 +56,7 @@ public class AuthController : ControllerBase
 
         var user = _userRepository.Get(request.Username);
 
-        user.Token = tokenString;
+        user.SetToken(tokenString);
         _userRepository.Update(user);
 
         _ = Task.Run(async () =>
@@ -84,24 +84,24 @@ public class AuthController : ControllerBase
     [SwaggerResponse(StatusCodes.Status409Conflict, "A user with the same username or email already exists", typeof(string))]
     public IActionResult Register([FromBody] User newUser)
     {
-        if (!EmailValidator.IsValidEmail(newUser.Email))
+        if (!EmailValidator.IsValidEmail(newUser.GetEmail()))
         {
             return BadRequest("Invalid email format");
         }
-        var existingUser = _userRepository.Exists(newUser.Username,newUser.Email);
+        var existingUser = _userRepository.Exists(newUser.GetUsername(), newUser.GetEmail());
 
         if (existingUser)
         {
             return Conflict("A user with the same username or email already exists");
         }
-        var existingCounty = _countyRepository.Exists(newUser.CountyCode);
+        var existingCounty = _countyRepository.Exists(newUser.GetCountyCode());
 
-        if(!existingCounty)
+        if (!existingCounty)
         {
             return BadRequest("The provided county does not exist");
         }
 
-        newUser.Password = _authService.HashPassword(newUser.Password);
+        newUser.SetPassword(_authService.HashPassword(newUser.GetPassword()));
         _userRepository.Add(newUser);
 
         return Ok();

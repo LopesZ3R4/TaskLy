@@ -29,7 +29,7 @@ namespace Services {
 
         var hashedPassword = HashPassword(password);
 
-        return hashedPassword == user.Password;
+        return hashedPassword == user.GetPassword();
     }
 
     public string HashPassword(string password)
@@ -40,7 +40,7 @@ namespace Services {
             return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
         }
     }
-    public string GetUsernameFromToken(string token)
+    public string? GetUsernameFromToken(string token)
     {
         var handler = new JwtSecurityTokenHandler();
         var validations = new TokenValidationParameters
